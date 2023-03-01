@@ -21,9 +21,9 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
     browser.get(url)
     browser.implicitly_wait(1)
     team_home = browser.find_elements(By.CSS_SELECTOR, "a.participant__participantName")[0].get_attribute(
-            "href") + "/results/"
+            "href") + "results/"
     team_away = browser.find_elements(By.CSS_SELECTOR, "a.participant__participantName")[1].get_attribute(
-            "href") + "/results/"
+            "href") + "results/"
     title = browser.find_element(By.CSS_SELECTOR, ".tournamentHeader__country").text
     print(title)
     def separator(matches):
@@ -58,7 +58,7 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
     def separation_home_away(team_, all_matches):
         home_matches = list()
         away_matches = list()
-        waste = ["W", "U18", "U20", "U21", "U23"]  # WASTE - U20 and another juniors and woman champs//
+        waste = ["W", "U18","U19", "U20", "U21", "U23"]  # WASTE - U20 and another juniors and woman champs//
         for i in waste:
             if i in team_:
                 team_ = [j for j in team_ if j not in waste]
@@ -89,24 +89,8 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
                 scoreline = match[-13:-1]
             else:
                 scoreline = match[-11:-1]
-            scorelines.append(scoreline)
-
+            scorelines.append(list(map(int,scoreline)))
         return scorelines
-
-    def results(scores,loc,timeline):
-        team_scored = []
-        team_conceded = []
-        if period == "total":
-            x, y = 0, 1
-        if period == "first":
-            x, y = 2, 3
-        if period == "second":
-            x, y = 4, 5
-        if period == "third":
-            x, y = 6, 7
-        if period == "fourth":
-            x, y = 8, 9
-
 
     def quater_one(scores):
         total = []
@@ -194,138 +178,200 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
             print('All is fine!!!')
             return True
 
+    """WINSTREAK  PROCESSING"""""
 
 
-    def win_one_of4(data,loc):
-        line = get_scores(data)
-        win, loss, count = 0, 0, 0
-        if loc == 'home':
-            for qwt in line:
-                if qwt[2] > qwt[3] or qwt[4] > qwt[5] or qwt[6] > qwt[7] or qwt[8] > qwt[9]:
-                    win += 1
-                else:
-                    loss += 1
-                count += 1
-            print("HOME RESULT(WIN/percentage)", f"{win}/{count}")
-
-        if loc  == 'away':
-            for qwt in line:
-                if qwt[2] < qwt[3] or qwt[4] < qwt[5] or qwt[6] < qwt[7] or qwt[8] < qwt[9]:
-                    win += 1
-                else:
-                    loss += 1
-                count += 1
-            print("AWAY RESULT(WIN/percentage)",f"{win}/{count}")
-        if count == 0 :
-            count = 1
-        if count >= 15 and count - win <2: return True
-        else: return False
+    team1_results_home = get_scores(team1_home)
+    team1_results_away = get_scores(team1_away)
+    team2_results_home = get_scores(team2_home)
+    team2_results_away = get_scores(team2_away)
 
 
-    def win_all_of4(data,loc):
-        line = get_scores(data)
-        win, loss, count = 0, 0, 0
-        if loc == 'home':
-            for qwt in line:
-                if qwt[2] >= qwt[3] and qwt[4] >= qwt[5] and qwt[6] >= qwt[7] and qwt[8] >= qwt[9]:
-                    win += 1
-                else:
-                    loss += 1
-                count += 1
-            print("HOME RESULT(WIN/percentage)", f"{win}/{count}")
+    def home_win_one_of3(scores):
+        win, matches = 0, len(scores)
 
-        if loc  == 'away':
-            for qwt in line:
-                if qwt[2] <= qwt[3] and qwt[4] <= qwt[5] and qwt[6] <= qwt[7] and qwt[8] <= qwt[9]:
-                    win += 1
-                else:
-                    loss += 1
-                count += 1
-            print("AWAY RESULT(WIN/percentage)",f"{win}/{count}")
+        for data in scores:
+            if data[2]>data[3] or data[4]>data[5] or data[6]>data[7]:
+                win+=1
+        return win, matches
 
-        if count == 0:
-            count = 1
-        if count >= 15 and win <2: return True
-        else: return False
+    def away_win_one_of3(scores):
+        win, matches = 0, len(scores)
 
-    def win_one_of3(data, loc):
-        line = get_scores(data)
-        win, loss, count = 0, 0, 0
-        if loc == 'home':
-            for qwt in line:
-                if qwt[2] > qwt[3] or qwt[4] > qwt[5] or qwt[6] > qwt[7]:
-                    win += 1
-                else:
-                    loss += 1
-                count += 1
-            print("HOME RESULT (WIN ONE OF 3Q) ", f"{win}/{count}")
-
-        if loc == 'away':
-            for qwt in line:
-                if qwt[2] < qwt[3] or qwt[4] < qwt[5] or qwt[6] < qwt[7]:
-                    win += 1
-                else:
-                    loss += 1
-                count += 1
-            print("AWAY RESULT(WIN ONE OF 3Q) ", f"{win}/{count}")
-
-        if count == 0:
-            count = 1
-        if count >= 15 and count - win <2:
-            return  True
-        else: return False
-
-    def win_all_of3(data, loc):
-        line = get_scores(data)
-        win, loss, count = 0, 0, 0
-        if loc == 'home':
-            for qwt in line:
-                if qwt[2] >= qwt[3] and qwt[4] >= qwt[5] and qwt[6] >= qwt[7]:
-                    win += 1
-                else:
-                    loss += 1
-                count += 1
-            print("HOME RESULT(WIN ALL OF 3Q) ", f"{win}/{count}")
-
-        if loc == 'away':
-            for qwt in line:
-                if qwt[2] <= qwt[3] and qwt[4] <= qwt[5] and qwt[6] <= qwt[7]:
-                    win += 1
-                else:
-                    loss += 1
-                count += 1
-            print("AWAY RESULT(WIN ALL OF 3Q) ", f"{win}/{count}")
-
-        if count == 0:
-            count == 1
-        if count >= 15 and win < 2:
-            return  True, round(win * 100 / count,1)
-        else: return False
-
-    condition3_team1, condition3_team2 = False, False
-    condition4_team1, condition4_team2 = False, False
+        for data in scores:
+            if data[3]>data[2] or data[5]>data[4] or data[7]>data[6]:
+                win+=1
+        return win, matches
 
 
-    t1h_win_one3 = win_one_of3(team1_home, loc = 'home')
-    t1a_win_one3 = win_one_of3(team1_away, loc = 'away')
-    t1h_win_all3 = win_all_of3(team1_home, loc = 'home')
-    t1a_win_all3 = win_all_of3(team1_away, loc = 'away')
-    print('-'*50)
-    t2h_win_one3 = win_one_of3(team2_home, loc = 'home')
-    t2a_win_one3 = win_one_of3(team2_away, loc = 'away')
-    t2h_win_all3 = win_all_of3(team2_home, loc = 'home')
-    t2a_win_all3 = win_all_of3(team2_away, loc = 'away')
-    print()
-    t1h_win_one4 = win_one_of4(team1_home, loc = 'home')
-    t1a_win_one4 = win_one_of4(team1_away, loc = 'away')
-    t1h_win_all4 = win_all_of4(team1_home, loc = 'home')
-    t1a_win_all4 = win_all_of4(team1_away, loc = 'away')
-    print('-'*50)
-    t2h_win_one4 = win_one_of4(team2_home, loc = 'home')
-    t2a_win_one4 = win_one_of4(team2_away, loc = 'away')
-    t2h_win_all4 = win_all_of4(team2_home, loc = 'home')
-    t2a_win_all4 = win_all_of4(team2_away, loc = 'away')
+    def home_win_all3(data):
+        win, matches = 0, len(data)
 
+        for match in data:
+            if match[2]>match[3] and match[4] > match[5] and match[6] > match[7]:
+                win += 1
+
+        return win, matches
+
+
+    def away_win_all3(data):
+        win, matches = 0, len(data)
+
+        for match in data:
+            if match[3] > match[2] and match[5] > match[4] and match[7] > match[6]:
+                win += 1
+
+        return win, matches
+
+
+    def home_lose_one_of3(data):
+        lose, matches =0, len(data)
+
+        for scores in data:
+            if scores[2]<scores[3] or scores[4]<scores[5] or scores[6]<scores[7]:
+                lose += 1
+        return lose, matches
+
+
+    def away_lose_one_of3(data):
+        lose, matches =0, len(data)
+
+        for scores in data:
+            if scores[3] < scores[2] or scores[5] < scores[4] or scores[7] < scores[6]:
+                lose += 1
+        return lose, matches
+
+
+    team1_win1of3_home, team1_win1of3_away = home_win_one_of3(team1_results_home), away_win_one_of3(team1_results_away)
+    team1_win3of3_home, team1_win3of3_away = home_win_all3(team1_results_home), away_win_all3(team1_results_away)
+    team1_lose1of3_home, team1_lose1of3_away = home_lose_one_of3(team1_results_home), away_lose_one_of3(team1_results_away)
+
+    team2_win1of3_home, team2_win1of3_away = home_win_one_of3(team2_results_home), away_win_one_of3(team2_results_away)
+    team2_win3of3_home, team2_win3of3_away = home_win_all3(team2_results_home), away_win_all3(team2_results_away)
+    team2_lose1of3_home, team2_lose1of3_away = home_lose_one_of3(team2_results_home), away_lose_one_of3(team2_results_away)
+
+
+    def case_3_home(data1, data2, data3, data4): # data1 =t1 win 1 of 3 home, data2 =t2 lose 1 of 3 away, data3 =t1 win 1 of 3 away, data4 = t2 lose 1 of 3 home
+        if data1[1] - data1[0]<20 and data1[1]>18:
+            if data2[1] - data2[0]<20 and data2[1]>15:
+                print(url)
+                print("TEAM1 WIN ONE OF 3 QWTS (INCLUDING LOSES OPPONENTS)")
+                print(data1,data2)
+                approx_win = round((data1[0]+data3[0]) / (data1[1] + data3[1]), 2) * 100
+                approx_lose = round((data2[0] + data4[0]) / (data2[1] + data4[1]), 2) * 100
+
+                msg = (f'Real disposal:{data1}{data2}',
+                      f'Vice versa:{data3}{data4}',
+                      f'win: {approx_win}%  lose: {approx_lose}%')
+
+                return True, msg
+
+
+    def case_3_away(data1, data2, data3, data4): # data1 =t2 win 1 of 3 away, data2 = t1 lose 1 of 3 home, data3 = t2 win 1 of 3 home, data4 = t1 lose 1 of 3 away
+        if data1[1] - data1[0]<20 and data1[1]>18: # team win one of 3
+            if data2[1] - data2[0]<20 and data2[1]>15: # team lose one of 3
+                print(url)
+                print("TEAM2 WIN ONE OF 3 QWTS (INCLUDING LOSES OPPONENTS)")
+                print(data1,data2)
+                approx_win = round((data1[0] + data3[0]) / (data1[1] + data3[1]), 2) * 100
+                approx_lose = round((data2[0] + data4[0]) / (data2[1] + data4[1]), 2)* 100
+
+                msg = (f'Real disposal:{data1}{data2}',
+                      f'Vice versa:{data3}{data4}',
+                      f'win: {approx_win}%  lose: {approx_lose}%')
+
+
+                return True, msg
+
+
+
+
+    def home_win_one_of4(scores):
+        win, matches = 0, len(scores)
+
+        for data in scores:
+            if data[2]>data[3]+2 or data[4]>data[5]+2 or data[6]>data[7]+2 or data[8]>data[9]+2:
+                win+=1
+        return win, matches
+
+
+    def away_win_one_of4(scores):
+        win, matches = 0, len(scores)
+
+        for data in scores:
+            if data[3]>data[2]+2 or data[5]>data[4]+2 or data[7]>data[6]+2 or data[9]>data[8]+2:
+
+                win+=1
+        return win, matches
+
+    def home_lose_one_of4(data):
+        lose, matches =0, len(data)
+
+        for scores in data:
+            if scores[2]+2<scores[3] or scores[4]+2<scores[5] or scores[6]+2<scores[7] or scores[8]+2<scores[9]:
+                lose += 1
+        return lose, matches
+
+
+    def away_lose_one_of4(data):
+        lose, matches =0, len(data)
+
+        for scores in data:
+            if scores[3]+2 < scores[2] or scores[5]+2 < scores[4] or scores[7]+2 < scores[6] or scores[9]+2 < scores[8]:
+                lose += 1
+        return lose, matches
+
+
+    def case_4_home(data1, data2, data3, data4):  # data1 =t1 win 1 of 3 home, data2 =t2 lose 1 of 3 away, data3 =t1 win 1 of 3 away, data4 = t2 lose 1 of 3 home
+        if data1[1] - data1[0]<2 and data1[1]>18:
+            if data2[1] - data2[0]<2 and data2[1]>=15:
+                print(url)
+                print("TEAM1 WIN ONE OF 4 QWTS")
+                print('Normal :: ',data1, data2)
+                print('Vise versa :: ', data3, data4)
+                approx_win = round((data1[0]+data3[0]) / (data1[1] + data3[1]), 2) * 100
+                approx_lose = round((data2[0] + data4[0]) / (data2[1] + data4[1]), 2) * 100
+
+                msg = (f'REAL DISPOSAL::   {data1} {data2}',
+                      f'VICE VERSA::  {data3} {data4}',
+                      f'WIN::: {approx_win}%    LOSE::: {approx_lose}%')
+
+                return True, msg
+
+
+    def case_4_away(data1, data2, data3, data4): # data1 =t2 win 1 of 3 away, data2 = t1 lose 1 of 3 home, data3 = t2 win 1 of 3 home, data4 = t1 lose 1 of 3 away
+        if data1[1] - data1[0]<2 and data1[1]>18:
+            if data2[1] - data[2]<2 and data2[1]>=15:
+                print(url)
+                print("TEAM2 WIN ONE OF 4 QWTS")
+                print('Normal :: ',data1, data2)
+                print('Vise versa :: ', data3, data4)
+                approx_win = round((data1[0]+data3[0]) / (data1[1] + data3[1]), 2) * 100
+                approx_lose = round((data2[0] + data4[0]) / (data2[1] + data4[1]), 2) * 100
+
+                msg = (f'REAL DISPOSAL::   {data1} {data2}',
+                      f'VICE VERSA::  {data3} {data4}',
+                      f'WIN:: {approx_win}%    LOSE:: {approx_lose}%')
+
+                return True, msg
+
+    team1_win1of4_home, team1_win1of4_away = home_win_one_of4(team1_results_home), away_win_one_of4(team1_results_away)
+    team1_lose1of4_home, team1_lose1of4_away = home_lose_one_of4(team1_results_home), away_lose_one_of4(team1_results_away)
+    team2_win1of4_home, team2_win1of4_away = home_win_one_of4(team2_results_home), away_win_one_of4(team2_results_away)
+    team2_lose1of4_home, team2_lose1of4_away = home_lose_one_of4(team2_results_home), away_lose_one_of4(team2_results_away)
+
+
+    occasionAtHome_3 = case_3_home(team1_win1of3_home, team2_lose1of3_away, team1_win1of3_away, team2_lose1of3_home)
+    occasionAway_3 = case_3_away(team2_win1of3_away, team1_lose1of3_home, team2_win1of3_home, team1_lose1of3_away)
+
+    occasionAtHome_4 = case_4_home(team1_win1of4_home, team2_lose1of4_away, team1_win1of4_away, team2_lose1of4_home)
+    occasionAway_4 = case_4_home(team2_win1of4_away, team1_lose1of4_home, team2_win1of4_home, team1_lose1of4_away)
+
+    print(occasionAtHome_3)
+    print(occasionAway_3)
+
+    print(occasionAtHome_4)
+    print(occasionAway_4)
 
     def look_at_first(prev, data, mean_1q):
         previous_quarter = sum(prev[:2]) # current result of first quarter
@@ -390,132 +436,6 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
         return f'|Min:{min(prior)}| {mean_more} / {ave_more} / {len(prior)}'
 
 
-
-
-    def compare_quarter(previous,data1,data2,sum_mean,ave,quarter):
-
-        """  compare previous quarter result and futher quarter
-            and return bool for condition and meaning to display """
-
-
-        more_mean, less_mean = 0, 0
-        more_ave, less_ave = 0, 0
-        count_mean, count_ave = 0, 0
-        count1 = 0
-        if quarter == 2:
-            previous_quarter = sum(previous[:2])
-            for i in data1:
-                previous_quarter_was = sum(map(int, i[2:4]))
-                second_qwt = sum(map(int,i[4:6]))
-                if previous_quarter_was >= previous_quarter:
-                    count1 += 1
-                    if sum(map(int,i[4:6])) >= sum_mean:
-                        more_mean += 1
-                        count_mean += 1
-                    if second_qwt >= ave:
-                        more_ave += 1
-                        count_ave += 1
-
-            for i in data2:
-                previous_quarter_was = sum(map(int, i[2:4]))
-                second_qwt = sum(map(int,i[4:6]))
-                if previous_quarter_was >= previous_quarter:
-                    count1 += 1
-                    if sum(map(int,i[4:6])) >= sum_mean:
-                        more_mean += 1
-                        count_mean += 1
-                    if second_qwt >= ave:
-                        more_ave += 1
-                        count_ave += 1
-
-        if quarter == 3:
-            previous_quarter1 = sum(previous[:2])
-            previous_quarter2 = sum(previous[2:4])
-            for i in data1:
-                previous_quarter1_was = sum(map(int, i[2:4]))
-                previous_quarter2_was = sum(map(int, i[4:6]))
-                third_qwt = sum(map(int,i[6:8]))
-                if previous_quarter1_was >= previous_quarter1 and previous_quarter2_was >= previous_quarter2:
-                    count1 += 1
-                    if sum(map(int,i[6:8])) >= sum_mean:
-                        more_mean += 1
-                        count_mean += 1
-                    if third_qwt >= ave:
-                        more_ave += 1
-                        count_ave += 1
-
-            for i in data2:
-                previous_quarter1_was = sum(map(int, i[2:4]))
-                previous_quarter2_was = sum(map(int, i[4:6]))
-                third_qwt = sum(map(int,i[6:8]))
-                if previous_quarter1_was >= previous_quarter1 and previous_quarter2_was >= previous_quarter2:
-                    count1 += 1
-                    if sum(map(int,i[6:8])) >= sum_mean:
-                        more_mean += 1
-                        count_mean += 1
-                    if third_qwt >= ave:
-                        more_ave += 1
-                        count_ave += 1
-
-    def up_to(value, matches):
-        prev_list = list()
-        more3 = 0
-        more4 = 0
-        for i in matches:
-            qwt1, qwt2, qwt3, qwt4 = sum(map(int, i[2:4])), sum(map(int, i[4:6])), sum(map(int, i[6:8])), sum(
-                map(int, i[8:]))
-            if qwt1 > value or qwt2 > value or qwt3 > value:
-                more3 += 1
-            if qwt1 > value or qwt2 > value or qwt3 > value or qwt4 > value:
-                more4 += 1
-            else:
-                print(i)
-        print('MORE IN 3 QWT:: ', more3)
-        print('MORE IN 4 QWT:: ', more4)
-        print('ALL:: ', len(matches))
-        return more3, more4, len(matches)
-
-
-        print("COUNT BOTH: ", count1)
-        print("COUNT MORE MEAN: ", count_mean)
-        print("COUNT MORE AVE: ", count_ave)
-        print("MEAN SCORES: ", sum_mean)
-
-
-        if count1 > 25 and count_ave * 100 / count1 >= 90:
-            return (True, f'{count_mean}/{count_ave}/{count1}')
-        else:
-            return (False, f'{count_mean}/{count_ave}/{count1}')
-
-
-
-    if [t1h_win_one3, t1a_win_one3, t2h_win_all3, t2a_win_all3].count(True) > 2:
-        condition3_team1 = True
-
-    if [t2h_win_one3, t2a_win_one3, t1h_win_all3, t1a_win_all3].count(True) > 2:
-        condition3_team2 = True
-
-    if [t1h_win_one4, t1a_win_one4, t2h_win_all4, t2a_win_all4].count(True) > 2:
-        condition4_team1 = True
-
-    if [t2h_win_one4, t2a_win_one4, t1h_win_all4, t1a_win_all4].count(True) > 2:
-        condition4_team2 = True
-
-
-    print()
-    print("POSITIVE CONDITION FOR TEAM1 (3Q to WIN): ", condition3_team1)
-    print("POSITIVE CONDITION FOR TEAM1 (4Q to WIN): ", condition4_team1)
-    print("POSITIVE CONDITION FOR TEAM2 (3Q to WIN): ", condition3_team2)
-    print("POSITIVE CONDITION FOR TEAM2 (4Q to WIN): ", condition4_team2)
-
-
-
-    # print(nice_to_over(score_one,score_two,team1_1q,team2_1q,mean_first))
-
-
-
-
-
     def bet_string(list):
         part1 = sorted(list)[:5]
         part2 = sorted(list)[-5:]
@@ -543,70 +463,34 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
                 )
         bet_siska(bet)
 
-    if checker == 3:
-        add_info = compare_quarter(sl,get_scores(games[0]), get_scores(games[1]), mean_third, ave_third, quarter = 3 )[1]
-        bet = (title,"TIME:"+str(time),"SCORE:" + ' '.join(map(str,sl))+ "(" + current_score+ ")",
-            ' '.join(map(str,team1_name)),
-            ' '.join(map(str,team2_name)),
-            "3 QUARTER >>>",
-            "1:" + bet_string(team1_3q),
-            "2:" + bet_string(team2_3q),
-            "lowAve:: " + str(ave_third),
-            "Add. info:: " + add_info
-                )
-        bet_siska(bet)
 
-    if checker == 4:
+    if checker == 11 and occasionAway_3[0] == True:
         bet = (title,"TIME:"+str(time),"SCORE:"+current_score, ' '.join(map(str,team1_name)),' '.join(map(str,team2_name)),
-            "4 QUARTER >>>",
-            "1:" + bet_string(team1_4q),
-            "2:" + bet_string(team2_4q),
-            "lowAve:: " + str(ave_fourth)
+                ' TEAM2(AWAY) TO WIN 3 QUARTER ',
+               *occasionAway_3[1]
                 )
         bet_siska(bet)
 
-
-    if checker == 11 and condition3_team2 == True:
+    if checker == 111 and occasionAway_4[0] == True:
         bet = (title,"TIME:"+str(time),"SCORE:"+current_score, ' '.join(map(str,team1_name)),' '.join(map(str,team2_name)),
-                ' TEAM2(AWAY) TO WIN 3 QUARTER '
+                ' TEAM2(AWAY) TO WIN 4 QUARTER ',
+               *occasionAway_4[1]
                 )
         bet_siska(bet)
 
-    if checker == 111 and condition4_team2 == True:
+    if checker == 22 and occasionAtHome_3[0] == True:
         bet = (title,"TIME:"+str(time),"SCORE:"+current_score, ' '.join(map(str,team1_name)),' '.join(map(str,team2_name)),
-                ' TEAM2(AWAY) TO WIN 4 QUARTER '
+                ' TEAM1(HOME) TO WIN 3 QUARTER ',
+               *occasionAtHome_3[1]
                 )
         bet_siska(bet)
 
-    if checker == 22 and condition3_team1 == True:
+    if checker == 222 and occasionAtHome_4[0] == True:
         bet = (title,"TIME:"+str(time),"SCORE:"+current_score, ' '.join(map(str,team1_name)),' '.join(map(str,team2_name)),
-                ' TEAM1(HOME) TO WIN 3 QUARTER '
+                ' TEAM1(HOME) TO WIN 4 QUARTER ',
+               *occasionAtHome_4[1]
                 )
         bet_siska(bet)
-
-    if checker == 222 and condition4_team1 == True:
-        bet = (title,"TIME:"+str(time),"SCORE:"+current_score, ' '.join(map(str,team1_name)),' '.join(map(str,team2_name)),
-                ' TEAM1(HOME) TO WIN 4 QUARTER '
-                )
-        bet_siska(bet)
-
-    if checker in range(32,40):
-
-        add_info1 = up_to(checker, get_scores(results_1))
-        add_info2 = up_to(checker, get_scores(results_2))
-
-        add_info = f'Value:{checker} 3Q: {add_info1[0]}/{add_info1[2]}  {add_info2[0]}/{add_info2[2]}'
-        bet = (title, "TIME:" + str(time), "SCORE:" + ' '.join(map(str, sl)) + "(" + current_score + ")",
-               ' '.join(map(str, team1_name)),
-               ' '.join(map(str, team2_name)),
-               "3 QUARTER >>>",
-               "1:" + bet_string(team1_3q),
-               "2:" + bet_string(team2_3q),
-               "lowAve:: " + str(ave_third),
-               add_info
-               )
-        bet_siska(bet)
-
 
     print("End of iteration...", checker)
     print()
