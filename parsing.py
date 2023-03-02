@@ -123,6 +123,11 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
     team1_total = total(get_scores(team1_home+team1_away))
     team2_total = total(get_scores(team2_home+team2_away))
 
+    team1_1q_home = quater_one(get_scores(team1_home))
+    team2_1q_away = quater_one(get_scores(team2_away))
+    team1_2q_home = quater_two(get_scores(team1_home))
+    team2_2q_away = quater_two(get_scores(team2_away))
+
 
     print("TEAM1 ave ::",sorted(team1_1q), len(team1_1q),'<-len', round(mean(team1_1q),1),'<-mean' )
     print("TEAM2 ave ::",sorted(team2_1q), len(team2_1q),'<-len', round(mean(team2_1q),1),'<-mean' )
@@ -143,10 +148,18 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
     fourth_t1 = sorted(team1_4q)[index1]
     fourth_t2 = sorted(team2_4q)[index2]
 
+    first_t1_home = sorted(team1_1q_home)[2]
+    first_t2_away = sorted(team2_1q_away)[2]
+    second_t1_home = sorted(team1_2q_home)[2]
+    second_t2_away = sorted(team2_2q_away)[2]
+
     ave_first = round(((first_t1 + first_t2) / 2), 1)
     ave_second = round(((second_t1 + second_t2) / 2), 1)
     ave_third = round(((third_t1 + third_t2) / 2), 1)
     ave_fourth = round(((fourth_t1 + fourth_t2) / 2), 1)
+
+    ave_first_real = round(((first_t1_home + first_t2_away) / 2), 1)
+    ave_second_real = round(((second_t1_home + second_t2_away) / 2), 1)
 
     mean_first = round(mean(team1_2q + team2_2q),1)
     mean_second = round(mean(team1_2q + team2_2q),1)
@@ -252,8 +265,8 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
 
 
     def case_3_home(data1, data2, data3, data4): # data1 =t1 win 1 of 3 home, data2 =t2 lose 1 of 3 away, data3 =t1 win 1 of 3 away, data4 = t2 lose 1 of 3 home
-        if data1[1] - data1[0]<20 and data1[1]>18:
-            if data2[1] - data2[0]<20 and data2[1]>15:
+        if data1[1] - data1[0]<3 and data1[1]>18:
+            if data2[1] - data2[0]<3 and data2[1]>15:
                 print(url)
                 print("TEAM1 WIN ONE OF 3 QWTS (INCLUDING LOSES OPPONENTS)")
                 print(data1,data2)
@@ -265,11 +278,11 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
                       f'win: {approx_win}%  lose: {approx_lose}%')
 
                 return True, msg
-
+        return False, '-'
 
     def case_3_away(data1, data2, data3, data4): # data1 =t2 win 1 of 3 away, data2 = t1 lose 1 of 3 home, data3 = t2 win 1 of 3 home, data4 = t1 lose 1 of 3 away
-        if data1[1] - data1[0]<20 and data1[1]>18: # team win one of 3
-            if data2[1] - data2[0]<20 and data2[1]>15: # team lose one of 3
+        if data1[1] - data1[0]<3 and data1[1]>18: # team win one of 3
+            if data2[1] - data2[0]<3 and data2[1]>15: # team lose one of 3
                 print(url)
                 print("TEAM2 WIN ONE OF 3 QWTS (INCLUDING LOSES OPPONENTS)")
                 print(data1,data2)
@@ -282,7 +295,7 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
 
 
                 return True, msg
-
+        return False, '-'
 
 
 
@@ -323,8 +336,8 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
 
 
     def case_4_home(data1, data2, data3, data4):  # data1 =t1 win 1 of 3 home, data2 =t2 lose 1 of 3 away, data3 =t1 win 1 of 3 away, data4 = t2 lose 1 of 3 home
-        if data1[1] - data1[0]<2 and data1[1]>18:
-            if data2[1] - data2[0]<2 and data2[1]>=15:
+        if data1[1] - data1[0]<3 and data1[1]>18:
+            if data2[1] - data2[0]<3 and data2[1]>=15:
                 print(url)
                 print("TEAM1 WIN ONE OF 4 QWTS")
                 print('Normal :: ',data1, data2)
@@ -337,11 +350,11 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
                       f'WIN::: {approx_win}%    LOSE::: {approx_lose}%')
 
                 return True, msg
-
+        return False, '-'
 
     def case_4_away(data1, data2, data3, data4): # data1 =t2 win 1 of 3 away, data2 = t1 lose 1 of 3 home, data3 = t2 win 1 of 3 home, data4 = t1 lose 1 of 3 away
-        if data1[1] - data1[0]<2 and data1[1]>18:
-            if data2[1] - data[2]<2 and data2[1]>=15:
+        if data1[1] - data1[0]<3 and data1[1]>18:
+            if data2[1] - data[2]<3 and data2[1]>=15:
                 print(url)
                 print("TEAM2 WIN ONE OF 4 QWTS")
                 print('Normal :: ',data1, data2)
@@ -354,6 +367,7 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
                       f'WIN:: {approx_win}%    LOSE:: {approx_lose}%')
 
                 return True, msg
+        return False, '-'
 
     team1_win1of4_home, team1_win1of4_away = home_win_one_of4(team1_results_home), away_win_one_of4(team1_results_away)
     team1_lose1of4_home, team1_lose1of4_away = home_lose_one_of4(team1_results_home), away_lose_one_of4(team1_results_away)
@@ -446,7 +460,11 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
             "1 QUARTER >>>",
             "1:" + bet_string(team1_1q),
             "2:" + bet_string(team2_1q),
-            "lowAve:: " + str(ave_first)
+            "lowAve:: " + str(ave_first),
+            'FOR HOME/AWAY::',
+            "1:" + bet_string(team1_1q_home),
+            "2:" + bet_string(team2_1q_away),
+            "lowAve:: " + str(ave_first_real),
                 )
         bet_siska(bet)
 
@@ -459,7 +477,11 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
             "1:" + bet_string(team1_2q),
             "2:" + bet_string(team2_2q),
             "lowAve:: " + str(ave_second),
-            "Add. info:: "+ add_info
+            "Add. info:: "+ add_info,
+            'FOR HOME/AWAY::',
+            "1:" + bet_string(team1_2q_home),
+            "2:" + bet_string(team2_2q_away),
+            "lowAve:: " + str(ave_second_real),
                 )
         bet_siska(bet)
 

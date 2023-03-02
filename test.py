@@ -72,7 +72,7 @@ while True:
                 if  period == 5:
                     continue
 
-                if period == 1  or ((current_score < 9 and minute >= 4) or (minute >= 5 and current_score < 12)
+                if period == 1  and ((current_score < 9 and minute >= 4) or (minute >= 5 and current_score < 12)
                     or (current_score < 15 and minute >=6)):
                     link = (get_link(i), minute)
                     print("1"*50)
