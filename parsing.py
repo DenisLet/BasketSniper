@@ -168,6 +168,11 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
 
     mean_1q_t1 = round(mean(team1_1q))
     mean_1q_t2 = round(mean(team2_1q))
+    mean_common_quarter1 = round((mean_1q_t1 + mean_1q_t2) / 2, 1)
+
+    mean_2q_t1 = round(mean(team1_2q))
+    mean_2q_t2 = round(mean(team2_2q))
+    mean_common_quarter2 = round((mean_2q_t1 + mean_2q_t2) / 2, 1)
 
     print(ave_first)
 
@@ -175,21 +180,18 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
     print(first_t2)
     current_score = f"{score_one}:{score_two}"
 
-    def nice_to_over(score_one,score_two,data1,data2,ave):
-        mean_total = round(mean(data1+data2),1)
-        score = score_one+score_two
-        if ave < 20:
-            print("ave- ", ave)
-            return False
-        if ave <= 25 and score > 6:
-            print('ave- ',ave,'score',score)
-            return False
-        if ave - sorted(data1)[0] > 10 or ave - sorted(data2)[0] > 10 :
-            print('difference 1>>2:: ', ave - sorted(data1)[0],ave - sorted(data2)[0] )
-            return False
-        else:
-            print('All is fine!!!')
+    def nice_to_over(score_one, score_two, mean_quarter, ave, time):
+
+        per_min = mean_quarter / 10 # not for asian and us champs
+        current = score_one + score_two
+        remain = 10.5 - time
+        remain_goals = remain * per_min
+
+        if remain_goals + current - ave  <= 2:
             return True
+
+        return False
+
 
     """WINSTREAK  PROCESSING"""""
 
@@ -455,7 +457,7 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
         part2 = sorted(list)[-5:]
         return f'{part1}<{round(mean(list), 1)}>{part2}'
 
-    if checker == 1 and nice_to_over(score_one,score_two,team1_1q,team2_1q,ave_first) == True:
+    if checker == 1 and nice_to_over(score_one, score_two, mean_common_quarter1, ave_first, minute) == True:
         bet = (title,"TIME :"+str(time),"SCORE: "+current_score, ' '.join(map(str,team1_name)),' '.join(map(str,team2_name)),
             "1 QUARTER >>>",
             "1:" + bet_string(team1_1q),
@@ -468,7 +470,7 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
                 )
         bet_siska(bet)
 
-    if checker == 2:
+    if checker == 2 and nice_to_over(sl[2], sl[3], mean_common_quarter2, ave_second, minute) == True:
         add_info = show_comparison(ave_second, mean_second, prior_quater)
         bet = (title,"TIME:"+str(time),"SCORE: " + ' '.join(map(str,sl))+ "(" + current_score+ ")",
             ' '.join(map(str,team1_name)),

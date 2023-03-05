@@ -83,7 +83,7 @@ while True:
                     check_link(link[0], time, score_one, score_two, period, minute, checker, score_line)
                     continue
 
-                if period == 2 and ((current_second < 8 and minute >=4) or (current_second<11 and minute>=5)
+                if period == 2 and ((current_second < 9 and minute >=4) or (current_second<12 and minute>=5)
                     or (current_score < 15 and minute >=6)):
                     link2 = (get_link(i), minute)
                     print("2"*50)
