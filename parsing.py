@@ -133,14 +133,26 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
     print("TEAM2 ave ::",sorted(team2_1q), len(team2_1q),'<-len', round(mean(team2_1q),1),'<-mean' )
 
 
-    index1 = len(team1_1q) // 10
+    index1 = len(team1_1q) // 10  # index min = -index +1
     index2 = len(team2_1q) // 10
     print('index1:: ',index1)
     print('index2::', index2)
 
 
     first_t1 = sorted(team1_1q)[index1]
+    if index1 > 1:
+        first_t1_min = sorted(team1_1q)[1-index1]
+        second_t1_min = sorted(team1_2q)[1 - index1]
+    else:
+        first_t1_min = sorted(team1_1q)[-1]
+        second_t1_min = sorted(team1_2q)[-1]
     first_t2 = sorted(team2_1q)[index2]
+    if index2 > 1:
+        first_t2_min = sorted(team2_1q)[1-index2]
+        second_t2_min = sorted(team2_2q)[1 - index2]
+    else:
+        first_t2_min = sorted(team2_1q)[-1]
+        second_t2_min = sorted(team2_2q)[-1]
     second_t1 = sorted(team1_2q)[index1]
     second_t2 = sorted(team2_2q)[index2]
     third_t1 = sorted(team1_3q)[index1]
@@ -149,17 +161,25 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
     fourth_t2 = sorted(team2_4q)[index2]
 
     first_t1_home = sorted(team1_1q_home)[2]
+    first_t1_home_min = sorted(team1_1q_home)[-2]
     first_t2_away = sorted(team2_1q_away)[2]
+    first_t2_away_min = sorted(team2_1q_away)[-2]
     second_t1_home = sorted(team1_2q_home)[2]
+    second_t1_home_min = sorted(team1_2q_home)[-2]
     second_t2_away = sorted(team2_2q_away)[2]
+    second_t2_away_min = sorted(team2_2q_away)[-2]
 
     ave_first = round(((first_t1 + first_t2) / 2), 1)
+    ave_first_min = round(((first_t1_min + first_t2_min) / 2), 1)
     ave_second = round(((second_t1 + second_t2) / 2), 1)
+    ave_second_min = round(((second_t1_min + second_t2_min) / 2), 1)
     ave_third = round(((third_t1 + third_t2) / 2), 1)
     ave_fourth = round(((fourth_t1 + fourth_t2) / 2), 1)
 
     ave_first_real = round(((first_t1_home + first_t2_away) / 2), 1)
+    ave_first_real_min = round(((first_t1_home_min + first_t2_away_min) / 2), 1)
     ave_second_real = round(((second_t1_home + second_t2_away) / 2), 1)
+    ave_second_real_min = round(((second_t1_home_min + second_t2_away_min) / 2), 1)
 
     mean_first = round(mean(team1_2q + team2_2q),1)
     mean_second = round(mean(team1_2q + team2_2q),1)
@@ -187,11 +207,27 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
         remain = 10.5 - time
         remain_goals = remain * per_min
 
-        if remain_goals + current - ave  <= 2:
+        if remain_goals + current - ave  <= 1:
             return True
+
+
 
         return False
 
+
+    def nice_to_low(score_one, score_two, mean_quarter, ave, time):
+
+        per_min = mean_quarter / 10 # not for asian and us champs
+        current = score_one + score_two
+        remain = 10.5 - time
+        remain_goals = remain * per_min
+
+        if  current + remain_goals - ave >=3 :
+            return True
+
+
+
+        return False
 
     """WINSTREAK  PROCESSING"""""
 
@@ -267,7 +303,7 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
 
 
     def case_3_home(data1, data2, data3, data4): # data1 =t1 win 1 of 3 home, data2 =t2 lose 1 of 3 away, data3 =t1 win 1 of 3 away, data4 = t2 lose 1 of 3 home
-        if data1[1] - data1[0]<3 and data1[1]>18:
+        if data1[1] - data1[0]<2 and data1[1]>18:
             if data2[1] - data2[0]<3 and data2[1]>15:
                 print(url)
                 print("TEAM1 WIN ONE OF 3 QWTS (INCLUDING LOSES OPPONENTS)")
@@ -283,7 +319,7 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
         return False, '-'
 
     def case_3_away(data1, data2, data3, data4): # data1 =t2 win 1 of 3 away, data2 = t1 lose 1 of 3 home, data3 = t2 win 1 of 3 home, data4 = t1 lose 1 of 3 away
-        if data1[1] - data1[0]<3 and data1[1]>18: # team win one of 3
+        if data1[1] - data1[0]<2 and data1[1]>18: # team win one of 3
             if data2[1] - data2[0]<3 and data2[1]>15: # team lose one of 3
                 print(url)
                 print("TEAM2 WIN ONE OF 3 QWTS (INCLUDING LOSES OPPONENTS)")
@@ -338,8 +374,8 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
 
 
     def case_4_home(data1, data2, data3, data4):  # data1 =t1 win 1 of 3 home, data2 =t2 lose 1 of 3 away, data3 =t1 win 1 of 3 away, data4 = t2 lose 1 of 3 home
-        if data1[1] - data1[0]<3 and data1[1]>18:
-            if data2[1] - data2[0]<3 and data2[1]>=15:
+        if data1[1] - data1[0]<2 and data1[1]>18:
+            if data2[1] - data2[0]<2 and data2[1]>=15:
                 print(url)
                 print("TEAM1 WIN ONE OF 4 QWTS")
                 print('Normal :: ',data1, data2)
@@ -355,8 +391,8 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
         return False, '-'
 
     def case_4_away(data1, data2, data3, data4): # data1 =t2 win 1 of 3 away, data2 = t1 lose 1 of 3 home, data3 = t2 win 1 of 3 home, data4 = t1 lose 1 of 3 away
-        if data1[1] - data1[0]<3 and data1[1]>18:
-            if data2[1] - data[2]<3 and data2[1]>=15:
+        if data1[1] - data1[0]<2 and data1[1]>18:
+            if data2[1] - data[2]<2 and data2[1]>=15:
                 print(url)
                 print("TEAM2 WIN ONE OF 4 QWTS")
                 print('Normal :: ',data1, data2)
@@ -467,6 +503,22 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
             "1:" + bet_string(team1_1q_home),
             "2:" + bet_string(team2_1q_away),
             "lowAve:: " + str(ave_first_real),
+               '\U00002B06' * 10
+                )
+        bet_siska(bet)
+
+
+    if checker == -1 and nice_to_low(score_one, score_two, mean_common_quarter1, ave_first_min, minute) == True:
+        bet = (title,"TIME :"+str(time),"SCORE: "+current_score, ' '.join(map(str,team1_name)),' '.join(map(str,team2_name)),
+            "1 QUARTER >>>",
+            "1:" + bet_string(team1_1q),
+            "2:" + bet_string(team2_1q),
+            "lowAve:: " + str(ave_first_min),
+            'FOR HOME/AWAY::',
+            "1:" + bet_string(team1_1q_home),
+            "2:" + bet_string(team2_1q_away),
+            "lowAve:: " + str(ave_first_real_min),
+               '\U00002B07' * 10
                 )
         bet_siska(bet)
 
@@ -484,6 +536,24 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
             "1:" + bet_string(team1_2q_home),
             "2:" + bet_string(team2_2q_away),
             "lowAve:: " + str(ave_second_real),
+               '\U00002B06' * 10
+                )
+        bet_siska(bet)
+
+    if checker == -2 and nice_to_low(sl[2], sl[3], mean_common_quarter1,ave_second_min, minute) == True:
+
+        bet = (title,"TIME:"+str(time),"SCORE: " + ' '.join(map(str,sl))+ "(" + current_score+ ")",
+            ' '.join(map(str,team1_name)),
+            ' '.join(map(str,team2_name)),
+            "2 QUARTER >>>",
+            "1:" + bet_string(team1_2q),
+            "2:" + bet_string(team2_2q),
+            "lowAve:: " + str(ave_second_min),
+            'FOR HOME/AWAY::',
+            "1:" + bet_string(team1_2q_home),
+            "2:" + bet_string(team2_2q_away),
+            "lowAve:: " + str(ave_second_real_min),
+               '\U00002B07' * 10
                 )
         bet_siska(bet)
 

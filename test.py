@@ -68,29 +68,39 @@ while True:
                 print("CURRENT : ", current_first,current_second,current_third,current_fourth)
                 print("EACH : ", score_line[0],score_line[1],score_line[2],score_line[3],score_line[4],score_line[5],score_line[6],score_line[7])
                 print()
-
+                checker = 0
                 if  period == 5:
                     continue
 
-                if period == 1  and ((current_score < 9 and minute >= 4) or (minute >= 5 and current_score < 12)
-                    or (current_score < 15 and minute >=6)):
+                if period == 1:
+                    if ((current_score < 9 and minute >= 4) or (minute >= 5 and current_score < 12)
+                        or (current_score < 15 and minute >=6)):
+                        checker = 1
+                    if ((current_score > 17 and minute <= 4) or (minute <= 5 and current_score > 22)
+                        or (current_score > 26 and minute <=6) or (current_score > 31 and minute <=7)):
+                        checker = -1
                     link = (get_link(i), minute)
                     print("1"*50)
-                    if link in period1_list:
+                    if link in period1_list or checker == 0:
                         continue
                     period1_list.add(link)
-                    checker = 1
+
                     check_link(link[0], time, score_one, score_two, period, minute, checker, score_line)
                     continue
 
-                if period == 2 and ((current_second < 9 and minute >=4) or (current_second<12 and minute>=5)
-                    or (current_score < 15 and minute >=6)):
+                if period == 2:
+                    if  ((current_second < 9 and minute >=4) or (current_second<12 and minute>=5)
+                        or (current_second < 15 and minute >=6)):
+                        checker = 2
+                    if  ((current_second > 17 and minute <=4) or (current_second>22 and minute<=5)
+                        or (current_second > 26 and minute <=6) or (current_second > 31 and minute <=7)):
+                        checker = -2
                     link2 = (get_link(i), minute)
                     print("2"*50)
-                    if link2 in period2_list:
+                    if link2 in period2_list or checker == 0:
                         continue
                     period2_list.add(link2)
-                    checker = 2
+
                     check_link(link2[0], time, score_line[2], score_line[3], period, minute, checker, score_line)
                     continue
 
