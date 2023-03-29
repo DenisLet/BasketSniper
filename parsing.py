@@ -129,6 +129,16 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
     team2_2q_away = quater_two(get_scores(team2_away))
 
 
+    team1_total_min = min(team1_total)
+    team1_total_max = max(team1_total)
+    team2_total_min = min(team2_total)
+    team2_total_max = max(team2_total)
+
+    totals = (min(team1_total_min,team2_total_min), max(team1_total_max, team2_total_max))
+
+
+
+
     print("TEAM1 ave ::",sorted(team1_1q), len(team1_1q),'<-len', round(mean(team1_1q),1),'<-mean' )
     print("TEAM2 ave ::",sorted(team2_1q), len(team2_1q),'<-len', round(mean(team2_1q),1),'<-mean' )
 
@@ -189,15 +199,35 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
     mean_1q_t1 = round(mean(team1_1q))
     mean_1q_t2 = round(mean(team2_1q))
     mean_common_quarter1 = round((mean_1q_t1 + mean_1q_t2) / 2, 1)
+    score_per_minute_meanQ1 = round(mean_common_quarter1/10,1)
+
 
     mean_2q_t1 = round(mean(team1_2q))
     mean_2q_t2 = round(mean(team2_2q))
     mean_common_quarter2 = round((mean_2q_t1 + mean_2q_t2) / 2, 1)
+    score_per_minute_meanQ2 = round(mean_common_quarter2 / 10, 1)
+
+    def as_goes_per_minute(score1,score2,time):
+        return round((score1+score2)/(time-1), 1)
+
+    quater_as_goes = as_goes_per_minute(score_one, score_two, minute)
+
+    def additional_compare(score_one,score_two,time, rate_real, rate_normal):
+        rate_average = round((rate_real+rate_normal)/2,1)
+        remain = 11 -time
+        value_current =  score_one + score_two + rate_real*remain
+        value_normal = score_one + score_two + rate_normal*remain
+        value_average = score_one + score_two + rate_average*remain
+
+        return f'{value_current}({rate_real}) -- {value_average}({rate_average}) -- {value_normal}({rate_normal})'
 
     print(ave_first)
 
     print(first_t1)
     print(first_t2)
+    print('SCORES PER MINUTE NORM 1-2Q:', mean_common_quarter1,mean_common_quarter2)
+    print('AS GOES PER MINUTE::', quater_as_goes)
+
     current_score = f"{score_one}:{score_two}"
 
     def nice_to_over(score_one, score_two, mean_quarter, ave, time):
@@ -222,7 +252,7 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
         remain = 10.5 - time
         remain_goals = remain * per_min
 
-        if  current + remain_goals - ave >=3 :
+        if  ave - current - remain_goals <=2 :
             return True
 
 
@@ -503,7 +533,8 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
             "1:" + bet_string(team1_1q_home),
             "2:" + bet_string(team2_1q_away),
             "lowAve:: " + str(ave_first_real),
-               '\U00002B06' * 10
+               '\U00002B06' * 5 + f' ({team1_total_min,team2_total_min,team1_total_max,team2_total_max}) ',
+               additional_compare(score_one,score_two,minute, quater_as_goes, score_per_minute_meanQ1)
                 )
         bet_siska(bet)
 
@@ -518,7 +549,8 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
             "1:" + bet_string(team1_1q_home),
             "2:" + bet_string(team2_1q_away),
             "lowAve:: " + str(ave_first_real_min),
-               '\U00002B07' * 10
+               '\U00002B07' * 5 + f' ({team1_total_min,team2_total_min,team1_total_max,team2_total_max}) ',
+               additional_compare(score_one, score_two, minute, quater_as_goes, score_per_minute_meanQ1)
                 )
         bet_siska(bet)
 
@@ -536,7 +568,9 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
             "1:" + bet_string(team1_2q_home),
             "2:" + bet_string(team2_2q_away),
             "lowAve:: " + str(ave_second_real),
-               '\U00002B06' * 10
+               '\U00002B06' * 5 + f' ({team1_total_min,team2_total_min,team1_total_max,team2_total_max}) ',
+               additional_compare(score_one, score_two, minute, quater_as_goes, score_per_minute_meanQ2)
+
                 )
         bet_siska(bet)
 
@@ -553,7 +587,8 @@ def check_link(url,time,score_one,score_two,period,minute,checker,sl):
             "1:" + bet_string(team1_2q_home),
             "2:" + bet_string(team2_2q_away),
             "lowAve:: " + str(ave_second_real_min),
-               '\U00002B07' * 10
+               '\U00002B07' * 5 + f' ({team1_total_min,team2_total_min,team1_total_max,team2_total_max}) ',
+               additional_compare(score_one, score_two, minute, quater_as_goes, score_per_minute_meanQ2)
                 )
         bet_siska(bet)
 
